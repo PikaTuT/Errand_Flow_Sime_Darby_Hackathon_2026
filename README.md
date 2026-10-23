@@ -57,7 +57,7 @@ To evaluate the system design during the prototype phase, certain live feeds are
 
 If you are evaluating or watching the demo, follow these steps in order:
 
-1. *Download the HTML file:" Download the Errand_Flow_Demo.html and open it in browser.
+1. *Download the HTML file:" Download the index.html and open it in browser.
 2. **Parse Rojak Input:** Use Input the sample Bahasa Rojak paragraph to auto-generate structured tasks.
 3. **Review Baseline:** Observe the route comparison map and calculated time savings.
 4. **Simulate Disruption (Restaurant Cancellation):** Trigger a restaurant cancellation event and approve the replacement reservation.
