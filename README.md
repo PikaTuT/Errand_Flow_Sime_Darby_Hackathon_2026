@@ -57,11 +57,12 @@ To evaluate the system design during the prototype phase, certain live feeds are
 
 If you are evaluating or watching the demo, follow these steps in order:
 
-1. **Parse Rojak Input:** Input the sample Bahasa Rojak paragraph to auto-generate structured tasks.
-2. **Review Baseline:** Observe the route comparison map and calculated time savings.
-3. **Simulate Disruption (Restaurant Cancellation):** Trigger a restaurant cancellation event and approve the replacement reservation.
-4. **Simulate Weather Shift (Storm Alert):** Trigger a rain event; watch outdoor tasks automatically pivot to dry afternoon slots.
-5. **Township Actions:** Add a community pool swim session and request a home technician slot. Notice how conflicting/peak slots are filtered out, and the guardhouse pass is automatically queued.
+1. *Download the HTML file:" Download the Errand_Flow_Demo.html and open it in browser.
+2. **Parse Rojak Input:** Use Input the sample Bahasa Rojak paragraph to auto-generate structured tasks.
+3. **Review Baseline:** Observe the route comparison map and calculated time savings.
+4. **Simulate Disruption (Restaurant Cancellation):** Trigger a restaurant cancellation event and approve the replacement reservation.
+5. **Simulate Weather Shift (Storm Alert):** Trigger a rain event; watch outdoor tasks automatically pivot to dry afternoon slots.
+6. **Township Actions:** Add a community pool swim session and request a home technician slot. Notice how conflicting/peak slots are filtered out, and the guardhouse pass is automatically queued.
 
 ---
 
