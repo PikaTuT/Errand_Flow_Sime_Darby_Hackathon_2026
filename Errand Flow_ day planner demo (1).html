@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Errand Flow: day planner demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a1016;--pn:#101921;--pn2:#141e27;--ink:#eef3f7;--mute:#8d9ba8;--or:#e8862a;--ok:#1d6b43;--okt:#c6f1d7;--rule:#1f2a35;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(900px 500px at 10% -10%,#14202b,transparent),var(--bg);color:var(--ink);font:15px/1.45 "Barlow",system-ui,sans-serif}
+main{max-width:1120px;margin:0 auto;padding:20px 14px 40px}
+h1{font:700 clamp(34px,6vw,54px)/1 "Barlow Condensed",sans-serif;margin:0 0 4px}h1 i{font-style:normal;color:var(--or)}
+.sub{color:var(--mute);margin:0 0 16px}
+.app{display:grid;grid-template-columns:200px minmax(0,1fr);border:6px solid #1a232d;border-radius:22px;background:#0c131a;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.5);min-height:620px}
+aside{background:#0e161d;padding:22px 0;border-right:1px solid var(--rule)}
+.brand{padding:0 20px 18px;font:600 22px/1.1 "Barlow",sans-serif}
+.brand small{display:block;color:var(--mute);font:400 14px "Barlow",sans-serif;margin-top:4px}
+#nav button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:none;border:0;border-left:4px solid transparent;border-radius:0;color:var(--ink);padding:12px 18px;font:500 15px "Barlow",sans-serif;cursor:pointer}
+#nav button.on{background:#141d26;border-left-color:var(--or)}
+#nav button:disabled{opacity:.4;cursor:not-allowed}
+.cnt{margin-left:auto;background:var(--or);color:#1a1006;border-radius:10px;padding:0 7px;font-size:12px;font-weight:700}
+.pg{display:none;padding:24px;min-width:0}
+.pg.on{display:block;animation:in .3s ease}
+@keyframes in{from{opacity:0;transform:translateY(8px)}}
+@media(prefers-reduced-motion:reduce){.pg.on{animation:none}}
+h2{font:700 24px/1.1 "Barlow",sans-serif;margin:0 0 16px}
+h3{font:600 17px "Barlow",sans-serif;margin:0 0 10px}
+.or{color:var(--or)}
+.meta{color:var(--mute);font-size:13px}
+.card{background:var(--pn);border:1px solid var(--rule);border-radius:12px;padding:16px;margin-bottom:14px}
+button{font:600 15px "Barlow",sans-serif;border:0;border-radius:8px;padding:11px 18px;cursor:pointer;background:var(--or);color:#1a1006}
+button.alt{background:#1b2530;color:var(--ink)}
+button:disabled{opacity:.5;cursor:not-allowed}
+button:focus-visible{outline:2px solid #fff;outline-offset:2px}
+textarea{width:100%;min-height:96px;background:#141e27;border:1px solid var(--rule);border-radius:10px;color:var(--ink);font:15px/1.4 "Barlow",sans-serif;padding:10px;resize:vertical}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}
+.task{background:var(--pn2);border-left:4px solid var(--c,#3ccf8e);border-radius:8px;padding:10px 12px;margin-bottom:8px}
+.task:nth-child(5n+2){--c:#4a90e2}.task:nth-child(5n+3){--c:#a06be0}.task:nth-child(5n+4){--c:#f5a524}.task:nth-child(5n){--c:#ef5b7b}
+.chip{display:inline-block;font-size:12px;border:1px solid var(--or);color:var(--or);border-radius:20px;padding:0 8px;margin:3px 6px 0 0}
+.two,.wtop{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:700px){.two,.wtop{grid-template-columns:1fr}}
+.lab{font:500 14px "Barlow",sans-serif;margin-bottom:6px;color:var(--mute)}
+.mapbox{position:relative;border:1px solid var(--rule);border-radius:10px;overflow:hidden;background:#0d1822}
+.mapbox svg{display:block;width:100%;height:auto}
+.tot{position:absolute;left:8px;bottom:8px;background:rgba(10,16,22,.85);border-radius:6px;padding:5px 9px;font-size:13px}
+.stats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.stat{flex:1 1 150px;background:var(--pn);border:1px solid var(--rule);border-radius:10px;padding:10px 12px}
+.stat b{display:block;font:700 26px/1.1 "Barlow Condensed",sans-serif;color:var(--or)}
+#tl{position:relative;padding-left:24px}
+#tl::before{content:"";position:absolute;left:6px;top:20px;bottom:20px;width:2px;background:var(--or)}
+.trow{position:relative;display:grid;grid-template-columns:66px minmax(0,1fr) 52px auto auto;gap:10px;align-items:center;padding:10px 6px;border-bottom:1px solid var(--rule)}
+.trow:last-child{border-bottom:0}
+.trow::before{content:"";position:absolute;left:-24px;top:50%;margin-top:-6px;width:12px;height:12px;border-radius:50%;background:var(--or)}
+.trow .t{color:var(--or);font-weight:700}
+@media(max-width:700px){.trow{grid-template-columns:60px 1fr auto}.trow .dur,.trow .bf{display:none}}
+.bf{background:#1b2530;border-radius:6px;padding:2px 8px;font-size:12px;white-space:nowrap}
+.bd{border-radius:6px;padding:3px 10px;font-size:13px;white-space:nowrap}
+.bd.ok{background:var(--ok);color:var(--okt)}.bd.warn{background:#d9822b;color:#1a1006}.bd.bad{background:#7d3026;color:#ffd5cd}
+.big{font:700 64px/1 "Barlow Condensed",sans-serif}
+.alert{background:linear-gradient(135deg,#3a1c17,#5a2a20);border-color:#7d3026}
+.alert.calm{background:var(--pn);border-color:var(--rule)}
+.hours{display:flex;justify-content:space-between;gap:6px;text-align:center}
+.hours div{flex:1}.hours span{display:block}
+.irow{display:grid;grid-template-columns:60px minmax(0,1fr) auto;gap:12px;align-items:center;background:var(--pn);border:1px solid var(--rule);border-radius:10px;padding:12px;margin-bottom:8px}
+.steps{display:flex;align-items:flex-start;margin:18px 0}
+.sn{width:34px;height:34px;border-radius:50%;border:2px solid #3a4856;display:grid;place-items:center;font-weight:700;background:#1b2530;margin:0 auto 6px}
+.sn.act{background:var(--or);border-color:var(--or);color:#1a1006}
+.sc{text-align:center;width:110px;font-size:13px}
+.sl{flex:1;height:2px;background:#3a4856;margin-top:17px}.sl.done{background:var(--or)}
+.prev{background:#0f1820;border:1px solid var(--rule);border-radius:10px;padding:14px}
+.prev p{margin:6px 0}
+@media(max-width:760px){.app{grid-template-columns:1fr}aside{border-right:0;border-bottom:1px solid var(--rule);padding:12px 0 0}#nav{display:flex;overflow-x:auto}#nav button{width:auto;border-left:0;border-bottom:3px solid transparent;white-space:nowrap}#nav button.on{border-bottom-color:var(--or)}}
+</style>
+</head>
+<body>
+<main>
+<h1>ERRAND <i>FLOW</i></h1>
+<p class="sub">Write your tasks in plain words. The planner finds what each one needs, then orders the day around travel, weather and crowds.</p>
+<div class="app">
+ <aside><div class="brand">Errand Line<small id="pg">Tasks</small></div><nav id="nav"></nav></aside>
+ <section class="pg" id="p-tasks">
+  <h2>My Tasks</h2>
+  <textarea id="inp">Malam ni dinner dengan Sam pukul 7 tau. Lepas kerja nak pergi gym kejap. Kena ambik parcel kat pejabat pos, lepas tu renew passport kat Imigresen, jangan lupa ambik nombor queue dulu. Oh, singgah farmasi beli ubat sekali. Kalau hujan, tak nak kena basah lah.</textarea>
+  <div class="row"><button id="go">Plan my day</button><button id="boom" class="alt" disabled>Restaurant cancels</button><button id="more" class="alt" disabled>Overload my day</button></div>
+  <div id="tasks"></div>
+ </section>
+ <section class="pg" id="p-sched">
+  <h2>Route Comparison</h2>
+  <div class="card"><div class="two"><div><div class="lab">YOUR ORDER</div><div class="mapbox" id="m1"></div></div><div><div class="lab or">AI-PLANNED ROUTE</div><div class="mapbox" id="m2"></div></div></div></div>
+  <div class="stats" id="stats"></div>
+  <div class="card"><h3>Optimized Timeline</h3><div id="tl"><span class="meta">No plan yet.</span></div></div>
+  <div id="dr"></div>
+ </section>
+ <section class="pg" id="p-weather">
+  <h2>Weather</h2>
+  <div class="wtop"><div class="card" id="wnow"></div><div class="card alert" id="walert"></div></div>
+  <div class="card hours" id="whours"></div>
+  <h3>Schedule Impact</h3><div id="wimp"></div>
+ </section>
+ <section class="pg" id="p-town">
+  <h2>Township Ecosystem</h2>
+  <div class="card"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><b>Demo Township</b><span class="bd ok">Connected</span><span class="meta">Community property management system (simulated)</span></div>
+   <div class="row"><button id="addpool" class="alt" disabled>Add pool swim</button><button id="addmnt" disabled>Request maintenance</button></div></div>
+  <div class="card"><h3>Swimming Pool</h3><div id="poolbars"></div><div class="meta" id="poolnote" style="margin-top:8px"></div></div>
+  <div class="card"><h3>Technician slots</h3><div id="slots"><span class="meta">Plan your day first.</span></div></div>
+  <div class="card"><h3>Connected systems</h3><div id="sys"></div></div>
+ </section>
+ <section class="pg" id="p-book">
+  <h2 class="or">Booking in Progress</h2>
+  <div id="job"></div>
+  <h3>History</h3><div id="hist"></div>
+ </section>
+</div>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const H=h=>h*60,fmt=m=>String(Math.floor(m/60)).padStart(2,"0")+":"+String(Math.round(m%60)).padStart(2,"0");
+const hm=m=>m>=60?Math.floor(m/60)+"h "+String(m%60).padStart(2,"0")+"m":m+"m";
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const P={home:[10,48,"Home"],post:[78,14,"Pejabat Pos"],imm:[30,12,"Imigresen"],pharm:[55,40,"Farmasi"],gym:[88,46,"Gym"],restA:[18,34,"Bistro Oro"],restB:[70,28,"Casa Verde"],office:[48,20,"Office"],lib:[40,52,"Library"],mall:[64,52,"Mall"],salon:[22,22,"Salon Nine"],pool:[74,36,"Community Pool"]};
+const dist=(a,b)=>Math.round(Math.hypot(P[a][0]-P[b][0],P[a][1]-P[b][1])*.8);
+const SUN=[10,10,10,20,30,40,70,70,50,30,20,10,10,10,10],STORM=[10,10,15,60,85,90,90,90,85,80,40,20,10,10,10];
+const TD=[26,27,28,29,30,31,29,28,28,27,27,26,26,25,25],TS=[25,25,26,26,25,24,24,24,24,25,25,25,25,24,24];
+let W=[...SUN],tasks=[],jobs=[],planned=false,cur="tasks",LAST=null;
+const rain=h=>W[Math.min(14,Math.max(0,h-8))];
+const CROWD={post:[30,50,60,70,85,70,40,45,70,80,50,30,20,10,10],imm:[60,90,95,85,70,50,40,30,20,10,5,5,5,5,5],pharm:[20,30,40,40,50,50,40,50,70,85,70,50,30,20,10],gym:[50,30,20,20,30,30,30,40,60,90,95,85,60,30,20],restA:[0,0,0,10,40,50,30,20,30,50,70,90,100,70,40],lib:[10,30,40,50,60,50,40,40,50,60,30,10,0,0,0],mall:[0,0,20,40,50,60,70,70,60,70,90,80,60,40,10],salon:[10,30,60,70,60,50,50,60,70,50,20,0,0,0,0]};
+CROWD.restB=CROWD.restA;CROWD.pool=[20,30,40,30,30,40,40,50,70,90,95,85,60,30,15];
+const MAXW={pool:20,post:40,imm:60,pharm:25,gym:15,restA:20,restB:20,lib:10,mall:15,salon:30};
+const crowdAt=(loc,st)=>CROWD[loc][Math.min(14,Math.max(0,Math.floor(st/60)-8))];
+const waitMin=(k,st)=>{const m=MAXW[k.loc];return m?Math.round(m*crowdAt(k.loc,st)/100*(k.pre?.25:1)):0};
+const parse=()=>[
+ {id:"dinner",title:"Dinner dengan Sam",loc:"restA",dur:90,s:H(19),e:H(21.5),pri:5,pre:{type:"booking"}},
+ {id:"gym",title:"Pergi gym",loc:"gym",dur:60,s:H(17),e:H(22),pri:2,pre:null},
+ {id:"post",title:"Ambik parcel",loc:"post",dur:15,s:H(9),e:H(17),pri:3,out:true,pre:null},
+ {id:"pass",title:"Renew passport",loc:"imm",dur:45,s:H(9),e:H(15),pri:4,out:true,pre:{type:"queue"}},
+ {id:"med",title:"Beli ubat",loc:"pharm",dur:10,s:H(9),e:H(20),pri:3,pre:null}];
+function sim(order){
+ let t=H(8),pos="home",legs=[],trav=0;
+ for(const k of order){
+  const d=dist(pos,k.loc);t+=d;trav+=d;
+  const start=Math.max(t,k.s),wt=waitMin(k,start);
+  if(start+k.dur+wt>k.e)return null;
+  legs.push({k,travel:d,start,wait:wt});
+  t=start+wt+k.dur;pos=k.loc;
+ }
+ return{legs,trav};
+}
+function solve(w=1,pw=1){let best=null;
+ const dfs=(pos,t,seq,trav,pri,pen,rem)=>{const c=trav+pen;if(best&&(pri+rem<best.pri||(pri+rem===best.pri&&c>=best.c)))return;if(!best||pri>best.pri||(pri===best.pri&&c<best.c))best={seq:[...seq],c,pri};
+  for(const k of ORD){if(seq.includes(k))continue;const d=dist(pos,k.loc),st=Math.max(t+d,k.s),wt=waitMin(k,st);
+   if(st+k.dur+wt>k.e||st+k.dur+wt>H(22))continue;
+   seq.push(k);dfs(k.loc,st+k.dur+wt,seq,trav+d,pri+k.pri,pen+pw*wt+(k.out?w*rain(Math.floor(st/60))/100*k.dur*1.5:0),rem-k.pri);seq.pop()}};
+ const ORD=[...tasks].sort((x,y)=>y.pri-x.pri);dfs("home",H(8),[],0,0,0,tasks.reduce((s,k)=>s+k.pri,0));
+ const r=sim(best.seq);r.pri=best.pri;r.c=best.c;r.dropped=tasks.filter(k=>!best.seq.includes(k));return r}
+const wetMin=r=>Math.round(r.legs.reduce((s,l)=>s+(l.k.out&&rain(Math.floor(l.start/60))>=50?l.k.dur:0),0));
+const naiveTravel=list=>{let pos="home",s=0;list.forEach(k=>{s+=dist(pos,k.loc);pos=k.loc});return s};
+const tw=x=>x.legs.reduce((s,l)=>s+l.wait,0);
+const bookStart=id=>{const l=LAST&&LAST.legs.find(x=>x.k.id===id);return l?fmt(l.start):""};
+
+function mapSVG(seq,col){
+ let s='<svg viewBox="0 0 100 64" role="img" aria-label="Route map"><path d="M64 0 C58 18 70 34 56 64" stroke="#13222e" stroke-width="9" fill="none"/>';
+ [15,35,55,75,92].forEach(x=>s+=`<line x1="${x}" y1="0" x2="${x+8}" y2="64" stroke="#17222c" stroke-width=".5"/>`);
+ [14,30,46].forEach(y=>s+=`<line x1="0" y1="${y}" x2="100" y2="${y-5}" stroke="#17222c" stroke-width=".5"/>`);
+ s+=`<polyline points="${seq.map(k=>P[k][0]+","+P[k][1]).join(" ")}" fill="none" stroke="${col}" stroke-width="1.4" stroke-linejoin="round"/>`;
+ s+=`<circle cx="${P.home[0]}" cy="${P.home[1]}" r="1.8" fill="#fff"/>`;
+ seq.slice(1).forEach((k,i)=>{const[x,y,n]=P[k];s+=`<circle cx="${x}" cy="${y}" r="3.6" fill="${col}" stroke="#0c131a" stroke-width=".7"><title>${n}</title></circle><text x="${x}" y="${y+1.4}" font-size="4" font-weight="700" text-anchor="middle" fill="#fff">${i+1}</text>`});
+ return s+"</svg>"}
+
+function renderTasks(){
+ $("tasks").innerHTML=tasks.map(k=>`<div class="task"><b>${k.title}</b><div class="meta">${P[k.loc][2]} · ${k.dur} min · ${fmt(k.s)}–${fmt(k.e)} · priority ${k.pri}</div>${k.pre?`<span class="chip">needs: ${k.id==="mnt"?"technician slot":k.pre.type==="booking"?"reservation":"queue ticket"}</span>`:""}${k.out?'<span class="chip">outdoor</span>':""}</div>`).join("");
+}
+const stat=l=>{const p=rain(Math.floor(l.start/60));if(l.k.out&&p>=50)return["Rain risk","bad"];if(l.wait>=10)return["Busy "+crowdAt(l.k.loc,l.start)+"%","warn"];return["On time","ok"]};
+function paintSched(r,a,b){
+ const kept=tasks.filter(k=>!r.dropped.includes(k)),n=naiveTravel(kept);
+ $("m1").innerHTML=mapSVG(["home",...kept.map(k=>k.loc)],"#4a9ad8")+`<div class="tot">Total time: <b>${hm(n)}</b></div>`;
+ $("m2").innerHTML=mapSVG(["home",...r.legs.map(l=>l.k.loc)],"#e8862a")+`<div class="tot">Total time: <b class="or">${hm(r.trav)}</b></div>`;
+ $("stats").innerHTML=[[Math.max(0,n-r.trav)+" min","travel saved"],[Math.max(0,tw(b)-tw(r))+" min","queue time avoided"],[Math.max(0,wetMin(a)-wetMin(r))+" min","less outdoor time in rain"]].map(([v,t])=>`<div class="stat"><b>${v}</b><span class="meta">${t}</span></div>`).join("");
+ $("tl").innerHTML=r.legs.map(l=>{const[sl,c]=stat(l);return `<div class="trow"><span class="t">${fmt(l.start)}</span><span><b>${l.k.title}</b><div class="meta">${P[l.k.loc][2]} · ${l.travel} min travel</div></span><span class="dur">${l.k.dur} min</span><span class="bf">${l.wait?"+"+l.wait+" min wait":"no queue"}</span><span class="bd ${c}">${sl}</span></div>`}).join("");
+ $("dr").innerHTML=r.dropped.length?'<h3>Moved to Saturday</h3>'+r.dropped.map(k=>`<div class="irow"><span class="meta">P${k.pri}</span><span><b>${k.title}</b><div class="meta">No slot left once higher-priority tasks are placed.</div></span><span class="bd warn">Later</span></div>`).join(""):"";
+}
+function paintWeather(r,a){
+ const storm=Math.max(...W)>=80,T=storm?TS:TD,hrs=W.map((p,i)=>p>=50?i+8:0).filter(Boolean),mx=Math.max(...W);
+ const cond=storm?"Thunderstorms":mx>=50?"Showers later":"Partly cloudy";
+ $("wnow").innerHTML=`<h3>Today’s Weather</h3><div style="display:flex;align-items:baseline;gap:12px"><span class="big">${Math.max(...T)}°</span><div><b>${cond}</b><div class="meta">Feels like ${Math.max(...T)+4}°<br>Wind 12 km/h NE · sample forecast</div></div></div>`;
+ $("walert").className="card alert"+(storm?"":" calm");
+ $("walert").innerHTML=storm?`<div class="or">ALERT</div><h3 style="font-size:24px">Storm Incoming</h3><div class="meta">Heavy rain and strong winds expected.<br>Starts at ${fmt(H(hrs[0]))}</div><div class="row"><button id="storm" class="alt">Reset forecast</button></div>`:`<div class="or">FORECAST</div><h3 style="font-size:24px">${hrs.length?"Showers this afternoon":"Dry day"}</h3><div class="meta">Rain chance up to ${mx}%${hrs.length?" from "+fmt(H(hrs[0]))+" to "+fmt(H(hrs[hrs.length-1]+1)):""}.</div><div class="row"><button id="storm">Simulate storm</button></div>`;
+ $("whours").innerHTML=[8,10,12,14,16,18,20].map(h=>{const p=rain(h);return `<div><span class="meta">${fmt(H(h))}</span><span style="font-size:26px">${p>=80?"⛈":p>=50?"🌧":p>=30?"⛅":"☀"}</span><span>${T[h-8]}°</span><span class="meta">${p}% rain</span></div>`}).join("");
+ const base=id=>a.legs.find(x=>x.k.id===id);
+ $("wimp").innerHTML=r.legs.map(l=>{const p=rain(Math.floor(l.start/60));let d,bd,c;
+  if(!l.k.out){d="Indoor, not affected by the weather";bd="On track";c="ok"}
+  else if(p>=50){d="Still in the rain window; no drier slot fits";bd="Rain risk";c="bad"}
+  else{const b=base(l.k.id);if(b&&Math.abs(b.start-l.start)>=20){d=`Moved ${l.start<b.start?"earlier":"later"} to dodge the rain`;bd="Rescheduled";c="warn"}else{d="Dry slot, no change needed";bd="On track";c="ok"}}
+  return `<div class="irow"><span class="meta">${fmt(l.start)}</span><span><b>${l.k.title}</b><div class="meta">${d}</div></span><span class="bd ${c}">${bd}</span></div>`}).join("");
+}
+const SLOTS=[{s:H(9),e:H(11)},{s:H(11),e:H(13),full:true},{s:H(14),e:H(16)},{s:H(16),e:H(18)},{s:H(19),e:H(21)}];
+const slotPeak=sl=>{for(let h=Math.floor(sl.s/60);h<Math.ceil(sl.e/60);h++)if(CROWD.pool[h-8]>=70)return true;return false};
+function chooseSlot(m){let best=null;
+ SLOTS.forEach(sl=>{sl.pick=false;sl.why=sl.full?"Fully booked":slotPeak(sl)?"Pool peak hours":"";if(sl.why)return;m.s=sl.s;m.e=sl.e;const r=solve();if(!best||r.pri>best.r.pri||(r.pri===best.r.pri&&r.c<best.r.c))best={sl,r}});
+ if(best){best.sl.pick=true;m.s=best.sl.s;m.e=best.sl.e}else{m.s=H(23);m.e=H(24)}}
+function paintTown(r){
+ const pl=r.legs.find(l=>l.k.id==="pool"),ph=pl?Math.floor(pl.start/60):-1,pk=CROWD.pool.map((p,i)=>p>=70?i+8:0).filter(Boolean);
+ $("poolbars").innerHTML='<div style="display:flex;align-items:flex-end;gap:4px;height:100px">'+CROWD.pool.map((p,i)=>`<div title="${i+8}:00, ${p}% busy" style="flex:1;text-align:center"><div style="height:${Math.max(4,p*.7)}px;background:${p>=70?"#b5402f":p>=45?"#d9822b":"#2f6f8f"};border-radius:3px;outline:${i+8===ph?"2px solid #fff":"0"}"></div><span class="meta" style="font-size:11px">${i+8}</span></div>`).join("")+"</div>";
+ $("poolnote").textContent=`Peak hours ${fmt(H(pk[0]))}–${fmt(H(pk[pk.length-1]+1))} (red). `+(pl?`Your swim is planned for ${fmt(pl.start)} (outlined), ${crowdAt("pool",pl.start)}% busy.`:"No swim planned yet.");
+ const m=tasks.find(k=>k.id==="mnt");
+ $("slots").innerHTML=m?SLOTS.map(sl=>`<div class="irow"><span class="meta">PMS</span><span><b>${fmt(sl.s)}–${fmt(sl.e)}</b><div class="meta">${sl.pick?"Best fit for your route; you are home for the visit":sl.why?"Excluded: "+sl.why.toLowerCase():"Available, but a better slot exists"}</div></span><span class="bd ${sl.pick?"ok":sl.why?"bad":"warn"}">${sl.pick?"Selected":sl.why?"Excluded":"Available"}</span></div>`).join(""):'<div class="meta">No maintenance requested yet. Press “Request maintenance”.</div>';
+}
+function render(){const m=tasks.find(k=>k.id==="mnt");if(m)chooseSlot(m);const r=solve();LAST=r;const a=solve(0),b=solve(1,0);paintSched(r,a,b);paintWeather(r,a);paintTown(r);return r}
+
+const mk=(id,title,sub,cancel,book)=>({id,title,sub,cancel,book,step:2,status:"pending"});
+function renderBook(){
+ const j=jobs.find(x=>x.status==="pending"),n=jobs.filter(x=>x.status==="pending").length;
+ nb.book.innerHTML=`<span>📅</span>Bookings${n&&cur!=="book"?`<b class="cnt">${n}</b>`:""}`;
+ if(!j){$("job").innerHTML='<div class="card"><b>All caught up</b><div class="meta">No bookings waiting for your confirmation.</div></div>'}
+ else{
+  const L=["Search Alternatives","Secure Booking","Waiting Confirmation"];
+  const st=L.map((t,i)=>{const s=i+1,cl=j.step>s?"done":j.step===s?"act":"";return `<div class="sc"><div class="sn ${cl}">${j.step>s?"✓":s}</div>${t}</div>`+(i<2?`<div class="sl ${j.step>s?"done":""}"></div>`:"")}).join("");
+  $("job").innerHTML=`<div class="card"><h3>${j.title}</h3><div class="meta">${j.sub}</div><div class="steps">${st}</div><div class="prev"><b class="or">Action Preview</b>${j.cancel?`<p><span class="or">Cancel:</span> ${j.cancel}</p>`:""}<p><span class="or">Book:</span> ${j.book}</p><div class="row"><button class="alt" id="dec" ${j.step>2?"disabled":""}>Decline</button><button id="cnf" ${j.step>2?"disabled":""}>Confirm Booking</button></div></div></div>`;
+  $("dec").onclick=()=>{j.status="declined";renderBook()};
+  $("cnf").onclick=async()=>{j.step=3;renderBook();await sleep(1500);j.step=4;j.status="confirmed";j.ref="RS-"+Math.floor(1000+Math.random()*9000);renderBook()};
+ }
+ const lab={confirmed:["Confirmed","ok"],declined:["Declined","warn"],cancelled:["Cancelled by venue","bad"]};
+ $("hist").innerHTML=jobs.filter(x=>x.status!=="pending").map(x=>`<div class="irow"><span class="meta">${x.ref||""}</span><span><b>${x.title}</b><div class="meta">${x.book}</div></span><span class="bd ${lab[x.status][1]}">${lab[x.status][0]}</span></div>`).join("")||'<div class="meta">Nothing yet.</div>';
+}
+
+const PG=[["tasks","✅","Tasks"],["sched","🗺","Schedule"],["weather","🌦","Weather"],["town","🏘","Township"],["book","📅","Bookings"]],nb={};
+PG.forEach(([id,ic,n])=>{const b=document.createElement("button");b.innerHTML=`<span>${ic}</span>${n}`;b.onclick=()=>show(id);$("nav").appendChild(b);nb[id]=b});
+function show(id){cur=id;PG.forEach(([k,,n])=>{$("p-"+k).classList.toggle("on",k===id);nb[k].classList.toggle("on",k===id);nb[k].disabled=k!=="tasks"&&!planned;if(k===id)$("pg").textContent=n});if(planned)renderBook()}
+
+$("go").onclick=()=>{
+ W=[...SUN];jobs=[];tasks=parse();planned=true;renderTasks();const r=render();
+ tasks.filter(k=>k.pre).forEach(k=>{const l=r.legs.find(x=>x.k===k);if(!l)return;
+  jobs.push(k.id==="dinner"?mk(k.id,"Restaurant Reservation","Tonight’s dinner with Sam",null,`${fmt(l.start)} at Bistro Oro, table for 2`):mk(k.id,"Queue Ticket","Skip the line at Imigresen",null,`Online ticket for ${fmt(l.start)}`))});
+ $("boom").disabled=false;$("more").disabled=false;$("addpool").disabled=false;$("addmnt").disabled=false;$("go").textContent="Start over";show("sched");
+};
+$("boom").onclick=()=>{
+ $("boom").disabled=true;const d=tasks.find(k=>k.id==="dinner"),old=bookStart("dinner");d.loc="restB";
+ jobs.filter(j=>j.id==="dinner"&&j.status!=="declined").forEach(j=>j.status="cancelled");
+ renderTasks();render();
+ jobs.push(mk("dinner","Restaurant Reservation","Adjusting tonight’s dinner reservation",`${old} reservation at Bistro Oro`,`${bookStart("dinner")} at Casa Verde, table for 2`));
+ show("book");
+};
+$("more").onclick=()=>{
+ $("more").disabled=true;
+ tasks.push({id:"mtg",title:"Meeting dengan team",loc:"office",dur:300,s:H(11),e:H(16),pri:5,pre:null},
+  {id:"lib",title:"Pulangkan buku library",loc:"lib",dur:20,s:H(9),e:H(18),pri:2,out:true,pre:null},
+  {id:"gift",title:"Beli hadiah birthday",loc:"mall",dur:30,s:H(10),e:H(21),pri:3,pre:null},
+  {id:"hair",title:"Gunting rambut",loc:"salon",dur:60,s:H(10),e:H(18),pri:2,pre:{type:"booking"}});
+ renderTasks();const r=render();
+ const l=r.legs.find(x=>x.k.id==="hair");if(l)jobs.push(mk("hair","Salon Booking","Gunting rambut kat Salon Nine",null,`${fmt(l.start)} at Salon Nine`));
+ show("sched");
+};
+$("walert").onclick=e=>{if(e.target.id!=="storm")return;
+ const before=bookStart("pass");W=Math.max(...W)>=80?[...SUN]:[...STORM];render();const after=bookStart("pass");
+ if(before&&after&&before!==after){const pj=jobs.filter(j=>j.id==="pass").pop();
+  if(pj&&pj.status==="pending")pj.book=`Online ticket for ${after}`;
+  else jobs.push(mk("pass","Queue Ticket","Adjusting your passport queue ticket",`Ticket for ${before}`,`Online ticket for ${after}`))}
+ renderBook();
+};
+$("sys").innerHTML=[["🔧","Maintenance slots","Read availability and book a technician window"],["🏊","Facility crowd levels","Read hourly busyness for the pool and clubhouse"],["🚪","Visitor pre-registration","Register the technician for gate access"],["🏠","Resident profile","Unit, contact and household members"]].map(([i,t,d])=>`<div class="irow"><span style="font-size:22px">${i}</span><span><b>${t}</b><div class="meta">${d}</div></span><span class="bd warn">Simulated</span></div>`).join("");
+$("addpool").onclick=()=>{$("addpool").disabled=true;tasks.push({id:"pool",title:"Berenang kat pool",loc:"pool",dur:45,s:H(9),e:H(21),pri:3,pre:null});renderTasks();render()};
+$("addmnt").onclick=()=>{$("addmnt").disabled=true;
+ tasks.push({id:"mnt",title:"Maintenance di rumah (paip bocor)",loc:"home",dur:45,s:H(9),e:H(11),pri:5,pre:{type:"booking"}});
+ renderTasks();const r=render();const l=r.legs.find(x=>x.k.id==="mnt"),sl=SLOTS.find(x=>x.pick);
+ if(l&&sl)jobs.push(mk("mnt","Maintenance Slot","Technician visit for the kitchen pipe leak",null,`${fmt(sl.s)}–${fmt(sl.e)} window, you are home at ${fmt(l.start)}. Avoids pool peak hours. Technician pre-registered at the guardhouse.`));
+ renderBook();
+};
+show("tasks");
+</script>
+</body>
+</html>
